@@ -36,7 +36,7 @@ INSTALLED_APPS = [
     'libraries',
     'maps',
     'seats',
-    'admin',
+    'adminpanel',
 ]
 
 REST_FRAMEWORK = {
