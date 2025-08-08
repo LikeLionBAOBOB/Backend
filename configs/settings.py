@@ -32,6 +32,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     # 추가한 앱
+    'accounts',
+    'libraries',
+    'maps',
+    'seats',
+    'admin',
 ]
 
 REST_FRAMEWORK = {
