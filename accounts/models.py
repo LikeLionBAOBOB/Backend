@@ -1,19 +1,16 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
+class User(AbstractUser):
+    ROLE_CHOICES = (
+        ('user', '일반 사용자'),
+        ('manager', '사서'),
+    )
 
-# abstractuser 상속 받지 않고 그냥 모델 두 개로.... -> 가능할지...?
-# class User(models.Model):
-#     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
-#     phone = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    nickname = models.CharField(max_length=30, unique=True, null=False, blank=False)  # 사용자 닉네임 (책읽는 시민, 김이화 사서)
+    phone = models.CharField(max_length=20, unique=True, null=True, blank=True)  # 일반 로그인 (010-1234-5678)
+    email = models.EmailField(unique=True, null=True, blank=True)  # 사서 로그인 (librarian@lib.or.kr)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')  # 사용자 역할 (일반 사용자, 사서)
 
-#     def __str__(self):
-#         return self.username
-
-
-# class Manager(models.Model):
-#     username = models.CharField(max_length=150, unique=True, null=True, blank=True)
-#     email = models.EmailField(unique=True, null=True, blank=True)
-#     password = models.CharField(max_length=128)
-
-#     def __str__(self):
-#         return self.username
+    def __str__(self):
+        return self.nickname
