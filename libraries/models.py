@@ -1,4 +1,5 @@
 from django.db import models
+from django.conf import settings
 
 class Library(models.Model):
     title = models.CharField(max_length=30, null=False)  # 도서관 이름
@@ -15,3 +16,14 @@ class Library(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class UserPin(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='user_pins')
+    library = models.ForeignKey(Library, on_delete=models.CASCADE, related_name='library_pins')
+
+    class Meta:
+        unique_together = ('user', 'library')
+
+    def __str__(self):
+        return f"{self.user.nickname} - {self.library.title}"
