@@ -5,5 +5,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # 형식: path('accounts/', include('accounts.urls')),
+    path('accounts/', include('accounts.urls')),
+    path('libraries/', include('libraries.urls')),
+    path('maps/', include('maps.urls')),
+    path('seats/', include('seats.urls')),
+    path('adminpanel/', include('adminpanel.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
