@@ -28,6 +28,7 @@ class ManagerLoginView(APIView):
         u = s.validated_data["user"]
         return Response({
             "access_token": s.validated_data["access_token"],
+            "refresh_token": s.validated_data["refresh_token"],
             "data": {
                 "name": getattr(u, "nickname", "") or getattr(u, "email", ""),
             },
