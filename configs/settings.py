@@ -32,6 +32,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     # 추가한 앱
+    'accounts',
+    'libraries',
+    'maps',
+    'seats',
+    'adminpanel',
 ]
 
 REST_FRAMEWORK = {
@@ -140,3 +145,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = 'accounts.User'
