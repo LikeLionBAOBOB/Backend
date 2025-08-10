@@ -25,3 +25,12 @@ class ManagerLoginView(APIView):
         if serializer.is_valid():
             return Response(serializer.validated_data)
         return Response(serializer.errors)
+
+
+class LogoutView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        serializer = LogoutSerializer(data={}, context={"request": request})
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.validated_data)
