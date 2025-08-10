@@ -45,3 +45,31 @@ class LibrarySimpleView(APIView):
 
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# 도서관 정보 확인 (전체)
+class LibraryDetailView(APIView):
+    def get(self, request, lib_code):
+        if lib_code not in LIB_CODES:
+            return Response({"error": "허용되지 않은 도서관 코드입니다."}, status=status.HTTP_404_NOT_FOUND)
+        
+        params = {
+            "authKey": settings.LIBRARY_API_KEY,
+            "libCode": lib_code,
+            "format": "json"
+        }
+
+        try:
+            res = requests.get(BASE_URL, params=params)
+            res.raise_for_status()
+            data = res.json()
+            libs_data = data.get("response", {}).get("libs", [])
+            if not libs_data:
+                return Response({"error": "도서관 정보를 불러올 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+            lib_info = libs_data[0]["lib"]
+            serializer = DetailLibrarySerializer((lib_info, lib_code), context={"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        except requests.RequestException as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
