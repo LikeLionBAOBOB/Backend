@@ -2,6 +2,7 @@ import re
 from rest_framework import serializers
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.token_blacklist.models import OutstandingToken, BlacklistedToken
 
 class UserLoginSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=20)
@@ -53,3 +54,18 @@ class ManagerLoginSerializer(serializers.Serializer):
                     }
                 }
                 return data
+
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField(required=False)
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+
+        # 해당 유저의 모든 refresh 토큰을 블랙리스트 처리
+        for token in OutstandingToken.objects.filter(user=user):
+            BlacklistedToken.objects.get_or_create(token=token)
+
+        return {
+            "message": "성공적으로 로그아웃되었습니다."
+        }
