@@ -7,16 +7,11 @@ class UserLoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        s = UserLoginSerializer(data=request.data)
-        s.is_valid(raise_exception=True)
-        u = s.validated_data["user"]
-        return Response({
-            "access_token": s.validated_data["access_token"],
-            "refresh_token": s.validated_data["refresh_token"],
-            "data": {
-                "name": getattr(u, "nickname", "")
-            },
-        }, status=status.HTTP_200_OK)
+        serializer = UserLoginSerializer(data=request.data)
+
+        if serializer.is_valid():
+            return Response(serializer.validated_data)
+        return Response(serializer.errors)
 
 
 class ManagerLoginView(APIView):
