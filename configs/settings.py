@@ -4,11 +4,10 @@ import os
 import environ
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+env = environ.Env(DEBUG=(bool, True))
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-
-# 환경 변수 로드 -> 추후 .env 파일을 사용하여 설정을 관리할 때 추가
-# env = environ.Env(DEBUG=(bool, True))
-# environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+LIBRARY_API_KEY = env('LIBRARY_API_KEY')
 
 SECRET_KEY = 'django-insecure-dlq5p+95^+pyc*9s=048%bkortmbp4wy)x83a@o@zvl++&-#^p'
 
@@ -54,7 +53,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
     'ROTATE_REFRESH_TOKENS': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
-    'TOKEN_USER_CLASS': 'accounts.User',
     'BLACKLIST_AFTER_ROTATION': True
 }
 
