@@ -147,3 +147,5 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.User'
+
+DEFAULT_MANAGER_LIBRARY_NAME = "해오름 작은도서관"
