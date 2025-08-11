@@ -57,7 +57,7 @@ class LibraryDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 
 # 즐겨찾기 추가 및 삭제
 class ToggleFavorite(APIView):
@@ -110,7 +110,6 @@ class ToggleFavorite(APIView):
 
 
 # 즐겨찾기 목록 확인
-
 class ViewFavoriteLibraries(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -123,12 +122,41 @@ class ViewFavoriteLibraries(APIView):
         items = []
         for pin in pins:
             code = pin.library.lib_code  # int
-            info = LIBRARY_INFO.get(str(code), {})  # 캐시 키가 str라면 str로
+            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}  # 캐시 키가 str라면 str로
             # SimpleLibrarySerializer는 lib.get("libName")를 참조하므로 키 맞춰줌
-            lib_dict = {
-                "libName": info.get("libName") or str(code)
-            }
-            items.append((lib_dict, code))
+            items.append((lib_info, code))
 
         serializer = SimpleLibrarySerializer(items, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+# 도서관 검색 결과 조회
+class LibrarySearchView(APIView):
+    def get(self, request):
+        q = request.query_params.get("q", "").strip()
+        if not q:
+            return Response({"message": "검색어가 누락되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        tokens = [t.strip() for t in q.split() if t.strip()]
+        lib_codes = Library.objects.values_list("lib_code", flat=True)
+
+        results = []
+        for code in lib_codes:
+            try:
+                lib = fetch_lib_info_or_none(code)
+                if not lib:
+                    continue
+
+                name = lib.get("libName", "")
+                address = lib.get("address", "")
+                if all(t in name or t in address for t in tokens):
+                    results.append((lib, code))
+            except requests.RequestException:
+                continue
+
+        if not results:
+            return Response({"message": "검색 결과가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        results.sort(key=lambda x: x[0].get("libName", "").strip())
+        data = SimpleLibrarySerializer(results, many=True, context={"request": request}).data
+        return Response({"results": data}, status=status.HTTP_200_OK)
