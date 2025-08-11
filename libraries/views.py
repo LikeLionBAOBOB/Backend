@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
 from .models import *
+from typing import Dict, List, Tuple
 
 BASE_URL = "http://data4library.kr/api/libSrch"
 
@@ -55,3 +56,35 @@ class LibraryDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# 도서관 검색 결과 조회
+class LibrarySearchView(APIView):
+    def get(self, request):
+        q = request.query_params.get("q", "").strip()
+        if not q:
+            return Response({"message": "검색어가 누락되었습니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        tokens = [t.strip() for t in q.split() if t.strip()]
+        lib_codes = Library.objects.values_list("lib_code", flat=True)
+
+        results = []
+        for code in lib_codes:
+            try:
+                lib = fetch_lib_info_or_none(code)
+                if not lib:
+                    continue
+
+                name = lib.get("libName", "")
+                address = lib.get("address", "")
+                if all(t in name or t in address for t in tokens):
+                    results.append((lib, code))
+            except requests.RequestException:
+                continue
+
+        if not results:
+            return Response({"message": "검색 결과가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        results.sort(key=lambda x: x[0].get("libName", "").strip())
+        data = SimpleLibrarySerializer(results, many=True, context={"request": request}).data
+        return Response({"results": data}, status=status.HTTP_200_OK)

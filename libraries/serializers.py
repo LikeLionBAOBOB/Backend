@@ -80,3 +80,7 @@ class DetailLibrarySerializer(serializers.Serializer):
             "naver_map": naver_map,
             "site": site
         }
+
+
+# 도서관 검색 결과 조회
+LibrarySearchSerializer = SimpleLibrarySerializer
