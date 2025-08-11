@@ -7,4 +7,6 @@ urlpatterns = [
     path('<int:lib_code>/simple/', LibrarySimpleView.as_view(), name='simple-library'),  # /libraries/<int: library_id>/simple/ -> library_id에 lib_code 입력하면 됨
     path('<int:lib_code>/detail/', LibraryDetailView.as_view(), name='detail-library'),  # /libraries/<int: library_id>/detail/ -> library_id에 lib_code 입력하면 됨
     path("search/", LibrarySearchView.as_view(), name="search"),  # /libraries/search/?q=검색어
+    path('<int:lib_code>/favorites/', ToggleFavorite.as_view(), name='toggle-favorite'),
+    path('favorites/', ViewFavoriteLibraries.as_view(), name='view-favorite'),
 ]
