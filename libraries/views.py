@@ -4,7 +4,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import *
+from django.db import IntegrityError
 from .models import *
+from rest_framework.permissions import IsAuthenticated
 
 BASE_URL = "http://data4library.kr/api/libSrch"
 
@@ -55,3 +57,78 @@ class LibraryDetailView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
+# 즐겨찾기 추가 및 삭제
+class ToggleFavorite(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def _get_library_or_404(self, lib_code: int):
+        try:
+            # 존재하는 도서관만 허용
+            return Library.objects.get(lib_code=lib_code)
+        except Library.DoesNotExist:
+            return None
+
+    def post(self, request, lib_code):
+        library = self._get_library_or_404(lib_code)
+        if library is None:
+            return Response(
+                {"detail": "존재하지 않는 도서관 코드입니다.", "library_id": lib_code},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        pin, created = UserPin.objects.get_or_create(user=request.user, library=library)
+        return Response(
+            {
+                "is_favorite": True,
+                "created": created,            # true면 이번에 새로 추가
+                "library_id": lib_code,
+                "message": "즐겨찾기에 추가되었습니다." if created else "이미 즐겨찾기에 있습니다."
+            },
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        )
+
+    def delete(self, request, lib_code):
+        library = self._get_library_or_404(lib_code)
+        if library is None:
+            return Response(
+                {"detail": "존재하지 않는 도서관 코드입니다.", "library_id": lib_code},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        deleted, _ = UserPin.objects.filter(user=request.user, library=library).delete()
+        return Response(
+            {
+                "is_favorite": False,
+                "deleted": bool(deleted),      # false면 원래 없던 상태
+                "library_id": lib_code,
+                "message": "즐겨찾기에서 삭제되었습니다." if deleted else "즐겨찾기에 없었습니다."
+            },
+            status=status.HTTP_200_OK
+        )
+
+
+# 즐겨찾기 목록 확인
+
+class ViewFavoriteLibraries(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        pins = (UserPin.objects
+                .filter(user=request.user)
+                .select_related('library')
+                .order_by('-id'))
+
+        items = []
+        for pin in pins:
+            code = pin.library.lib_code  # int
+            info = LIBRARY_INFO.get(str(code), {})  # 캐시 키가 str라면 str로
+            # SimpleLibrarySerializer는 lib.get("libName")를 참조하므로 키 맞춰줌
+            lib_dict = {
+                "libName": info.get("libName") or str(code)
+            }
+            items.append((lib_dict, code))
+
+        serializer = SimpleLibrarySerializer(items, many=True, context={"request": request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
