@@ -122,12 +122,9 @@ class ViewFavoriteLibraries(APIView):
         items = []
         for pin in pins:
             code = pin.library.lib_code  # int
-            info = LIBRARY_INFO.get(str(code), {})  # 캐시 키가 str라면 str로
+            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}  # 캐시 키가 str라면 str로
             # SimpleLibrarySerializer는 lib.get("libName")를 참조하므로 키 맞춰줌
-            lib_dict = {
-                "libName": info.get("libName") or str(code)
-            }
-            items.append((lib_dict, code))
+            items.append((lib_info, code))
 
         serializer = SimpleLibrarySerializer(items, many=True, context={"request": request})
         return Response(serializer.data, status=status.HTTP_200_OK)
