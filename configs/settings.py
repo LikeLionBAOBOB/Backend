@@ -11,6 +11,12 @@ LIBRARY_API_KEY = env('LIBRARY_API_KEY')
 
 SECRET_KEY = 'django-insecure-dlq5p+95^+pyc*9s=048%bkortmbp4wy)x83a@o@zvl++&-#^p'
 
+
+NAVER_MAPS_CLIENT_ID = os.getenv("NAVER_MAPS_CLIENT_ID")   # X-NCP-APIGW-API-KEY-ID
+NAVER_MAPS_CLIENT_SECRET = os.getenv("NAVER_MAPS_CLIENT_SECRET")      # X-NCP-APIGW-API-KEY
+GEOCODE_CACHE_TTL = 600  # 10분 캐시(선택)
+
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1']
