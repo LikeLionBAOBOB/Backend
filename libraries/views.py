@@ -24,6 +24,7 @@ def fetch_lib_info_or_none(lib_code: int):
         return None
     return libs_data[0]["lib"]
 
+'''
 # 주소 반환용 이름 가져오는 api
 
 def fetch_lib_name_or_none(lib_code: int):
@@ -39,7 +40,7 @@ def fetch_lib_name_or_none(lib_code: int):
     if not libs_data:
         return None
     return libs_data[0]["lib"]["libName"]
-
+'''
 
 # 도서관 정보 확인 (간략)
 class LibrarySimpleView(APIView):

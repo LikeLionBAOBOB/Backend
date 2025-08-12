@@ -1,4 +1,3 @@
-# views.py
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -12,7 +11,6 @@ import logging
 
 from .serializers import LibraryLocationAndCongestionResponse, LibraryItemSerializer
 from libraries.models import Library
-from libraries.views import fetch_lib_name_or_none
 
 BASE_URL = "http://data4library.kr/api/libSrch"
 
@@ -69,7 +67,7 @@ def fetch_lib_location_by_name(name: str, use_cache: bool = True):
                 "X-NCP-APIGW-API-KEY-ID": settings.NAVER_MAPS_CLIENT_ID,
                 "X-NCP-APIGW-API-KEY": settings.NAVER_MAPS_CLIENT_SECRET,
             },
-            timeout=2,  # 🔹빠르게 실패
+            timeout=2,  # 빠르게 실패
         )
         res.raise_for_status()
         data = res.json()
@@ -129,7 +127,7 @@ class NearbyLibrariesView(APIView):
         return qs[:limit]
 
     def build_library_item(self, lib: Library, force_direct: bool = False):
-        """API 명세서에 맞는 dict 구성."""
+        """Serializer에 맞는 dict 구성 - lib 객체를 포함한 구조로 변경"""
         logger.info(f"도서관 처리 시작: {lib.lib_code}")
         
         # 1차: 도서관 상세 정보 가져오기
@@ -158,18 +156,16 @@ class NearbyLibrariesView(APIView):
 
         lat, lng = coords
         level = infer_congestion_level(lib.lib_code)
-        congestion_text = congestion_level_to_text(level)
 
-        # API 명세서에 맞는 형태로 반환
+        # Serializer가 기대하는 형태로 반환 - lib 객체를 포함
         result = {
-            "id": str(lib.lib_code),  # 문자열로 변환
+            "lib": lib_info,  # 전체 lib_info 객체 포함
             "lat": lat,
             "lng": lng,
-            "congestion": congestion_text,
             "congestion_level": level,
         }
         
-        logger.info(f"도서관 처리 성공: {lib.lib_code} -> {result}")
+        logger.info(f"도서관 처리 성공: {lib.lib_code} -> lat={lat}, lng={lng}, congestion_level={level}")
         return result
 
     def build_library_item_safe(self, lib: Library, force_direct: bool = False):
@@ -216,11 +212,8 @@ class NearbyLibrariesView(APIView):
                 "libraries": items,
             }
             
-            # Serializer 사용하지 않고 직접 반환 (디버깅용)
-            # serializer = LibraryLocationAndCongestionResponse(payload, context={"request": request})
-            # return Response(serializer.data, status=status.HTTP_200_OK)
-            
-            return Response(payload, status=status.HTTP_200_OK)
+            serializer = LibraryLocationAndCongestionResponse(payload, context={"request": request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         except self.BadRequest as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
