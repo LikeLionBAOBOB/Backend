@@ -17,9 +17,9 @@ NAVER_MAPS_CLIENT_SECRET = os.getenv("NAVER_MAPS_CLIENT_SECRET")      # X-NCP-AP
 GEOCODE_CACHE_TTL = 600  # 10분 캐시(선택)
 
 
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'baobob.pythonanywhere.com']
 
 
 # Application definition
