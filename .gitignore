@@ -8,6 +8,7 @@ db.sqlite3
 db.sqlite3-journal
 # media -> 도서관 사진 파일 업로드 위해서 주석 처리
 /media/images/
+/seats/outputs/
 *.zip
 
 ### Environments ###
