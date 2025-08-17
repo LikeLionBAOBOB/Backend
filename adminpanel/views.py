@@ -50,3 +50,45 @@ class AdminSeatStatusView(APIView):
         
         serializer = AdminSeatStatusSerializer(results, many=True)
         return Response({"seats": serializer.data})
+    
+# 도서관 혼잡도 정보
+class AdminCongestionView(APIView):
+    def get(self, request):
+        lib_code = "111257"
+        img_name = "16.jpg"
+
+        img_path = IMAGES / str(lib_code) / img_name
+        seats = load_rois(lib_code, img_name)
+        objects = detect_objects(str(img_path))
+
+        current_seats = 0
+        total_seats = len(seats)
+
+        for seat in seats:
+            found = False
+            for obj in objects:
+                cx, cy = obj["center"]
+                if point_in_rect(cx, cy, seat):
+                    found = True
+                    break
+            if found:
+                current_seats += 1
+
+        if total_seats == 0:
+            congestion = "여유"
+        else:
+            ratio = current_seats / total_seats * 100
+            if ratio < 30:
+                congestion = "여유"
+            elif ratio < 70:
+                congestion = "보통"
+            else:
+                congestion = "혼잡"
+        
+        data = {
+            "current_seats": current_seats,
+            "total_seats": total_seats,
+            "congestion": congestion,
+        }
+        serializer = CongestionStatusSerializer(data)
+        return Response(serializer.data)
