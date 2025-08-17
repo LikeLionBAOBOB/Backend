@@ -92,3 +92,66 @@ class AdminCongestionView(APIView):
         }
         serializer = CongestionStatusSerializer(data)
         return Response(serializer.data)
+
+# 좌석 로그 확인
+LOG_IMAGES = [
+    ("13.jpg", "13:00"),
+    ("14.jpg", "13:20"),
+    ("15.jpg", "13:40"),
+    ("16.jpg", "14:00"),
+]
+
+class AdminSeatLogView(APIView):
+    def get(self, request, seat_id):
+        lib_code = "111257"
+
+        logs = []
+        prev_status = None
+        count = 0   # 사석화 카운트
+
+        for img_name, time_str in LOG_IMAGES:
+            img_path = IMAGES / lib_code / img_name
+            seats = load_rois(lib_code, img_name)
+            objects = detect_objects(str(img_path))
+
+            # 5번 좌석만
+            seat = next((s for s in seats if str(s["seat_id"]) == str(seat_id)), None)
+            if not seat:
+                continue
+
+            found_person = False
+            found_laptop = False
+            for obj in objects:
+                cx, cy = obj["center"]
+                if point_in_rect(cx, cy, seat):
+                    if obj["name"] == "person":
+                        found_person = True
+                    elif obj["name"] == "laptop":
+                        found_laptop = True
+
+            # 상태 결정
+            if found_person:
+                status = "이용 중"
+            elif found_laptop:
+                status = "사석화"
+            else:
+                status = "이용 가능"
+
+            # 좌석 로그
+            if (prev_status is None or prev_status in ["이용 중", "이용 가능"]) and status == "사석화":
+                logs.append({"time": time_str, "status": "사석화가 시작되었습니다."})
+                count = 1
+            elif prev_status == "사석화" and status == "사석화":
+                count += 1
+                logs.append({"time": time_str, "status": "사석화가 진행중입니다."})
+            # 직원이 짐 치우고 사석화 초기화
+            elif prev_status == "사석화" and status != "사석화":
+                count = 0
+            prev_status = status
+        logs.append({"time": "14:20", "status": "사석화가 60분 경과되었습니다."})
+
+        serializer = AdminSeatLogSerializer({
+            "seat_id": str(seat_id),
+            "log": logs
+        })
+        return Response(serializer.data)

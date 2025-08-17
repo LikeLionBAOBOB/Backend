@@ -17,3 +17,12 @@ class CongestionStatusSerializer(serializers.Serializer):
     current_seats = serializers.IntegerField()
     total_seats = serializers.IntegerField()
     congestion = serializers.CharField()
+
+# 좌석 로그 확인
+class SeatLogEntrySerializer(serializers.Serializer):
+    time = serializers.CharField()
+    status = serializers.CharField()
+
+class AdminSeatLogSerializer(serializers.Serializer):
+    seat_id = serializers.CharField()
+    log = SeatLogEntrySerializer(many=True)
