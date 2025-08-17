@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework.permissions import IsAuthenticated
 from seats.detect_objects import detect_objects
 from seats.views import load_rois, point_in_rect
 from pathlib import Path
@@ -12,12 +12,14 @@ IMAGES = PROJECT_ROOT / "media/images"
 ROIS = PROJECT_ROOT / "seats/rois"
 
 class ManagerLibraryView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         serializer = ManagerLibrarySerializer({})
         return Response(serializer.data)
 
 # 전체 좌석 확인
 class AdminSeatStatusView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         lib_code = "111257"
         img_name = "16.jpg"
@@ -53,6 +55,7 @@ class AdminSeatStatusView(APIView):
     
 # 도서관 혼잡도 정보
 class AdminCongestionView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request):
         lib_code = "111257"
         img_name = "16.jpg"
@@ -102,6 +105,7 @@ LOG_IMAGES = [
 ]
 
 class AdminSeatLogView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, seat_id):
         lib_code = "111257"
 
