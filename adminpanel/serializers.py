@@ -6,3 +6,7 @@ class ManagerLibrarySerializer(serializers.Serializer):
     
     def get_name(self, obj):
         return settings.DEFAULT_MANAGER_LIBRARY_NAME
+
+class AdminSeatStatusSerializer(serializers.Serializer):
+    seat_id = serializers.CharField()
+    status = serializers.CharField()
