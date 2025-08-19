@@ -26,10 +26,12 @@ def fetch_lib_info_or_none(lib_code: int):
     return libs_data[0]["lib"]
 
 # 혼잡도 정보를 가져오는 함수
-
 def get_library_congestion_data(lib_code: int):
     # 이미지 경로 및 좌석 정보 로드
-    img_name = "1.jpg"
+    if str(lib_code) == "111257":
+        img_name = "16.jpg"
+    else:
+        img_name = "1.jpg"  
     img_path = Path(settings.MEDIA_ROOT) / "images" / str(lib_code) / img_name
     seats = load_rois(lib_code, img_name)
     objects = detect_objects(str(img_path))
