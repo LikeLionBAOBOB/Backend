@@ -16,7 +16,7 @@
             "일": "09:00-17:00"
         },
         "naver_map": "https://map.naver.com/p/search/%EB%82%A8%EA%B0%80%EC%A2%8C%EC%83%88%EB%A1%AC%EB%8F%84%EC%84%9C%EA%B4%80/place/20514728?c=15.00,0,0,0,dh&placePath=/home?entry=bmp&from=map&fromPanelNum=2&timestamp=202508101733&locale=ko&svcName=map_pcv5&searchText=%EB%82%A8%EA%B0%80%EC%A2%8C%EC%83%88%EB%A1%AC%EB%8F%84%EC%84%9C%EA%B4%80",
-        "homepage": "https://lib.sdm.or.kr/sjrdlib/menu/40051contents/400418contents.do"
+        "homepage": "https://lib.sdm.or.kr/sdmlib/contents/40018/contents.do"
     },
     "111086": {
         "libCode": "111086",
@@ -56,7 +56,7 @@
             }
         },
         "naver_map": "https://map.naver.com/p/entry/place/12816117?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101734&locale=ko&svcName=map_pcv5",
-        "homepage": "https://mplib.mapo.go.kr/sganglib/index.do"
+        "homepage": "https://mplib.mapo.go.kr/sglib/index.do"
     },
     "711596": {
         "libCode": "711596",
@@ -96,7 +96,7 @@
             }
         },
         "naver_map": "https://map.naver.com/p/entry/place/1505758568?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101736&locale=ko&svcName=map_pcv5",
-        "homepage": "https://mplib.mapo.go.kr/metnalib/index.do"
+        "homepage": "https://mplib.mapo.go.kr/metalib/index.do"
     },
     "111514": {
         "libCode": "111514",
@@ -148,7 +148,7 @@
             }
         },
         "naver_map": "https://map.naver.com/p/entry/place/1766485473?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101737&locale=ko&svcName=map_pcv5",
-        "homepage": "https://mplib.mapo.go.kr/saltlib/index.do"
+        "homepage": "https://mplib.mapo.go.kr/naru/index.do"
     },
     "111467": {
         "libCode": "111467",
@@ -208,7 +208,7 @@
             "추가정보": "평일은 열람자료실만 20시까지"
         },
         "naver_map": "https://map.naver.com/p/entry/place/11811479?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101739&locale=ko&svcName=map_pcv5",
-        "homepage": "https://lib.sdm.or.kr/ijinlib/menu/40014contents/4001.do"
+        "homepage": "https://lib.sdm.or.kr/sdmlib/index.do"
     },
     "111252": {
         "libCode": "111252",
@@ -227,7 +227,7 @@
             "일": "09:00-17:00"
         },
         "naver_map": "https://map.naver.com/p/entry/place/20952106?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101740&locale=ko&svcName=map_pcv5",
-        "homepage": "https://lib.sdm.or.kr/hdodmlib/menu/40032contents/40020contents.do"
+        "homepage": "https://lib.sdm.or.kr/sdmlib/contents/40020/contents.do"
     },
     "111257": {
         "libCode": "111257",
@@ -246,6 +246,6 @@
             "일": "정기휴무(매주 일요일)"
         },
         "naver_map": "https://map.naver.com/p/entry/place/33133577?c=15.00,0,0,0,dh&placePath=/home?from=map&fromPanelNum=1&additionalHeight=76&timestamp=202508101741&locale=ko&svcName=map_pcv5",
-        "homepage": "https://www.smalllibrary.org/library/board/view.do?lib_idx=1102271"
+        "homepage": "https://www.smalllibrary.org/main/index"
     }
 }
