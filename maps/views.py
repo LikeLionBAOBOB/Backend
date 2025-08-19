@@ -8,6 +8,7 @@ import time
 import requests
 from json import JSONDecodeError
 import logging
+from libraries.views import get_library_congestion_data
 
 from .serializers import LibraryLocationAndCongestionResponse, LibraryItemSerializer
 from libraries.models import Library
@@ -93,13 +94,20 @@ def fetch_lib_location_by_name(name: str, use_cache: bool = True):
 
 
 def infer_congestion_level(lib_code: int) -> int:
-    return 2  # TODO 실제 로직으로 교체
+    """
+    도서관 혼잡도를 계산하고, 혼잡도 수준을 반환합니다.
+    """
+    try:
+        congestion_data = get_library_congestion_data(lib_code)
+        congestion_text = congestion_data.get("congestion", "보통")
 
+        # 혼잡도 텍스트를 숫자 레벨로 매핑
+        mapping = {"여유": 1, "보통": 2, "혼잡": 3, "정보 없음": 0}
+        return mapping.get(congestion_text, 0)  # 기본값은 "보통"
+    except Exception as e:
+        logger.error(f"혼잡도 계산 실패: {lib_code} - {e}")
+        return 2  # 기본값은 "보통"
 
-def congestion_level_to_text(level: int) -> str:
-    """congestion_level을 문자열로 변환"""
-    mapping = {1: "여유", 2: "보통", 3: "혼잡"}
-    return mapping.get(level, "보통")
 
 
 class NearbyLibrariesView(APIView):
@@ -155,7 +163,7 @@ class NearbyLibrariesView(APIView):
             return None
 
         lat, lng = coords
-        level = infer_congestion_level(lib.lib_code)
+        level = infer_congestion_level(lib.lib_code)  # 수정된 함수 호출
 
         # Serializer가 기대하는 형태로 반환 - lib 객체를 포함
         result = {

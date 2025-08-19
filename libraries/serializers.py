@@ -25,13 +25,18 @@ class SimpleLibrarySerializer(serializers.Serializer):
     def to_representation(self, instance):
         lib, lib_code = instance
         current_hours = LIBRARY_INFO.get(str(lib_code), {}).get("current_hours", "")
+        
+          # Context에서 혼잡도 관련 데이터 가져오기
+        current_seats = self.context.get("current_seats", 0)
+        total_seats = self.context.get("total_seats", 0)
+        congestion = self.context.get("congestion", "정보 없음")
 
         return {
             "name": lib.get("libName"),
             "image": f"{settings.MEDIA_URL}libraries/{lib_code}.png",  # lib_code는 views.py 참고
-            "current_seats": 0,      # 실제 좌석 수 반영 -> 추후 수정 필요
-            "total_seats": 0,        # 실제 좌석 수 반영 -> 추후 수정 필요
-            "congestion": "보통",    # 혼잡도 계산 -> 추후 수정 필요
+            "current_seats": current_seats,
+            "total_seats": total_seats,
+            "congestion": congestion,
             "is_open": "운영 중",    # 현재 시간 2시로 고정
             "operating_time": current_hours
         }
@@ -57,6 +62,12 @@ class DetailLibrarySerializer(serializers.Serializer):
         detail_time = LIBRARY_INFO.get(str(lib_code), {}).get("weekly_hours", "")
         naver_map = LIBRARY_INFO.get(str(lib_code), {}).get("naver_map", "")
         site = LIBRARY_INFO.get(str(lib_code), {}).get("homepage", "")
+        
+        
+          # Context에서 혼잡도 관련 데이터 가져오기
+        current_seats = self.context.get("current_seats", 0)
+        total_seats = self.context.get("total_seats", 0)
+        congestion = self.context.get("congestion", "정보 없음")
 
         folder_path = Path(settings.MEDIA_ROOT) / "libraries_detail" / str(lib_code)
         image_urls = []
@@ -71,9 +82,9 @@ class DetailLibrarySerializer(serializers.Serializer):
             "name": lib.get("libName"),
             "address": lib.get("address"),
             "images": image_urls,
-            "current_seats": 0,      # 실제 좌석 수 반영 -> 추후 수정 필요
-            "total_seats": 0,        # 실제 좌석 수 반영 -> 추후 수정 필요
-            "congestion": "보통",    # 혼잡도 계산 -> 추후 수정 필요
+            "current_seats": current_seats,
+            "total_seats": total_seats,
+            "congestion": congestion,
             "is_open": "운영 중",    # 현재 시간 2시로 고정
             "operating_time": current_hours,
             "detail_time": detail_time,

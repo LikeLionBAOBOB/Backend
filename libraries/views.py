@@ -7,9 +7,10 @@ from .serializers import *
 from django.db import IntegrityError
 from .models import *
 from rest_framework.permissions import IsAuthenticated
-
+from seats.views import load_rois, point_in_rect, detect_objects
 BASE_URL = "http://data4library.kr/api/libSrch"
 
+# 도서관 정보 조회 함수
 def fetch_lib_info_or_none(lib_code: int):
     params = {
         "authKey": settings.LIBRARY_API_KEY,
@@ -24,24 +25,47 @@ def fetch_lib_info_or_none(lib_code: int):
         return None
     return libs_data[0]["lib"]
 
-'''
-# 주소 반환용 이름 가져오는 api
+# 혼잡도 정보를 가져오는 함수
 
-def fetch_lib_name_or_none(lib_code: int):
-    params = {
-        "authKey": settings.LIBRARY_API_KEY,
-        "libCode": lib_code,
-        "format": "json",
+def get_library_congestion_data(lib_code: int):
+    # 이미지 경로 및 좌석 정보 로드
+    img_name = "1.jpg"
+    img_path = Path(settings.MEDIA_ROOT) / "images" / str(lib_code) / img_name
+    seats = load_rois(lib_code, img_name)
+    objects = detect_objects(str(img_path))
+
+    current_seats = 0
+    total_seats = len(seats)
+
+    # 좌석 점유 상태 계산
+    for seat in seats:
+        found = False
+        for obj in objects:
+            cx, cy = obj["center"]
+            if point_in_rect(cx, cy, seat):
+                found = True
+                break
+        if found:
+            current_seats += 1
+
+    # 혼잡도 계산
+    if total_seats == 0:
+        congestion = "정보 없음"
+    else:
+        ratio = current_seats / total_seats * 100
+        if ratio < 30:
+            congestion = "여유"
+        elif ratio < 70:
+            congestion = "보통"
+        else:
+            congestion = "혼잡"
+
+    return {
+        "current_seats": current_seats,
+        "total_seats": total_seats,
+        "congestion": congestion,
     }
-    res = requests.get(BASE_URL, params=params, timeout=5)
-    res.raise_for_status()
-    data = res.json()
-    libs_data = data.get("response", {}).get("libs", [])
-    if not libs_data:
-        return None
-    return libs_data[0]["lib"]["libName"]
-'''
-
+    
 # 도서관 정보 확인 (간략)
 class LibrarySimpleView(APIView):
     def get(self, request, lib_code: int):
@@ -52,8 +76,17 @@ class LibrarySimpleView(APIView):
             lib_info = fetch_lib_info_or_none(lib_code)
             if not lib_info:
                 return Response({"error": "도서관 정보를 불러올 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
-
-            serializer = SimpleLibrarySerializer((lib_info, lib_code), context={"request": request})
+            
+            congestion_data = get_library_congestion_data(lib_code)
+            
+            serializer = SimpleLibrarySerializer(
+                (lib_info, lib_code),
+                context={
+                    "request": request,
+                    **congestion_data,  # 혼잡도 관련 데이터 추가
+                },
+            )
+            
             return Response(serializer.data, status=status.HTTP_200_OK)
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -70,7 +103,16 @@ class LibraryDetailView(APIView):
             if not lib_info:
                 return Response({"error": "도서관 정보를 불러올 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
-            serializer = DetailLibrarySerializer((lib_info, lib_code), context={"request": request})
+                        # 혼잡도 데이터 가져오기
+            congestion_data = get_library_congestion_data(lib_code)
+
+            serializer = DetailLibrarySerializer(
+                (lib_info, lib_code),
+                context={
+                    "request": request,
+                    **congestion_data,  # 혼잡도 관련 데이터 추가
+                },
+            )
             return Response(serializer.data, status=status.HTTP_200_OK)
         except requests.RequestException as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
@@ -177,3 +219,4 @@ class LibrarySearchView(APIView):
         results.sort(key=lambda x: x[0].get("libName", "").strip())
         data = SimpleLibrarySerializer(results, many=True, context={"request": request}).data
         return Response({"results": data}, status=status.HTTP_200_OK)
+
