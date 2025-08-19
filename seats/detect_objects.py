@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 from pathlib import Path
 
-model_path = "yolov8n.pt"
+model_path = "yolov8n.onnx"
 
 def detect_objects(img_path, conf=0.3):
     model = YOLO(model_path)
