@@ -1,5 +1,10 @@
 {
     "111179": {
+        "libCode": "111179",
+        "name": "남가좌새롬어린이도서관",
+        "lat": 37.5783377,
+        "lng": 126.9240475,
+        "address": "서울 서대문구 증가로10길 16-15 남가좌새롬어린이도서관",
         "current_hours": "09:00-18:00",
         "weekly_hours": {
             "월": "정기휴무(매주 월요일)",
@@ -14,6 +19,11 @@
         "homepage": "https://lib.sdm.or.kr/sjrdlib/menu/40051contents/400418contents.do"
     },
     "111086": {
+        "libCode": "111086",
+        "name": "마포서강도서관",
+        "lat": 37.5477444,
+        "lng": 126.93206,
+        "address": "서울 마포구 독막로 165 서강동주민센터",
         "current_hours": "09:00-18:00",
         "weekly_hours": {
             "월": {
@@ -49,6 +59,11 @@
         "homepage": "https://mplib.mapo.go.kr/sganglib/index.do"
     },
     "711596": {
+        "libCode": "711596",
+        "name": "마포나루메타버스도서관",
+        "lat": 37.5373236,
+        "lng": 126.9442549,
+        "address": "서울 마포구 마포대로 8 나루",
         "current_hours": "09:00-22:00",
         "weekly_hours": {
             "월": {
@@ -84,6 +99,11 @@
         "homepage": "https://mplib.mapo.go.kr/metnalib/index.do"
     },
     "111514": {
+        "libCode": "111514",
+        "name": "마포소금나루도서관",
+        "lat": 37.5495159,
+        "lng": 126.9462201,
+        "address": "서울 마포구 숭문길 72",
         "current_hours": "09:00-22:00",
         "weekly_hours": {
             "월": {
@@ -131,6 +151,11 @@
         "homepage": "https://mplib.mapo.go.kr/saltlib/index.do"
     },
     "111467": {
+        "libCode": "111467",
+        "name": "마포중앙도서관",
+        "lat": 37.5637955,
+        "lng": 126.9082019,
+        "address": "서울 마포구 성산로 128",
         "current_hours": "09:00-22:00",
         "weekly_hours": {
             "월": {
@@ -166,6 +191,11 @@
         "homepage": "https://mplib.mapo.go.kr/mcl/index.do"
     },
     "111051": {
+        "libCode": "1111051",
+        "name": "서대문구립이진아기념도서관",
+        "lat": 37.5730502,
+        "lng": 126.9555345,
+        "address": "서울 서대문구 독립문공원길 80",
         "current_hours": "09:00-18:00",
         "weekly_hours": {
             "월": "정기휴무(매주 월요일)",
@@ -181,6 +211,11 @@
         "homepage": "https://lib.sdm.or.kr/ijinlib/menu/40014contents/4001.do"
     },
     "111252": {
+        "libCode": "111252",
+        "name": "홍은도담도서관",
+        "lat": 37.6017769,
+        "lng": 126.9489945,
+        "address": "서울 서대문구 홍은중앙로 129",
         "current_hours": "09:00-20:00",
         "weekly_hours": {
             "월": "09:00-20:00",
@@ -195,6 +230,11 @@
         "homepage": "https://lib.sdm.or.kr/hdodmlib/menu/40032contents/40020contents.do"
     },
     "111257": {
+        "libCode": "111257",
+        "name": "해오름작은도서관",
+        "lat": 37.5557827,
+        "lng": 126.9424619,
+        "address": "서울 마포구 신촌로26길 10 우리마포복지관 2층",
         "current_hours": "09:00-18:00",
         "weekly_hours": {
             "월": "09:00-18:00, 13:00-14:00 휴게시간",
