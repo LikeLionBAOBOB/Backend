@@ -50,7 +50,7 @@ logger = logging.getLogger(__name__)
 
 NAVER_GEOCODE_URL = "https://maps.apigw.ntruss.com/map-geocode/v2/geocode"
 WORKERS = 6
-TOTAL_TIME_BUDGET = 7.0  # 전체 응답 타임 박스(초)
+TOTAL_TIME_BUDGET = 20.0  # 전체 응답 타임 박스(초)
 
 def fetch_lib_location_by_name(name: str, use_cache: bool = True):
     """이름으로 지오코딩해서 (lat, lng) 반환. 캐시 우선."""
