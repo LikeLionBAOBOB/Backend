@@ -54,7 +54,7 @@ def get_library_congestion_data(lib_code: int):
     else:
         ratio = current_seats / total_seats * 100
         if ratio < 30:
-            congestion = "여유 있음"
+            congestion = "여유"
         elif ratio < 70:
             congestion = "보통"
         else:
