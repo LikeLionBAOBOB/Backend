@@ -224,6 +224,16 @@ class LibrarySearchView(APIView):
             return Response({"message": "검색 결과가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         results.sort(key=lambda x: x[0].get("libName", "").strip())
-        data = SimpleLibrarySerializer(results, many=True, context={"request": request}).data
+        data = []
+        for lib, code in results:
+            congestion_data = get_library_congestion_data(code)
+            serializer = SimpleLibrarySerializer(
+                (lib, code),
+                context={
+                    "request": request,
+                    **congestion_data
+                }
+            )
+            data.append(serializer.data)
         return Response({"results": data}, status=status.HTTP_200_OK)
 
