@@ -180,15 +180,20 @@ class ViewFavoriteLibraries(APIView):
                 .select_related('library')
                 .order_by('-id'))
 
-        items = []
+        result = []
         for pin in pins:
-            code = pin.library.lib_code  # int
-            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}  # 캐시 키가 str라면 str로
-            # SimpleLibrarySerializer는 lib.get("libName")를 참조하므로 키 맞춰줌
-            items.append((lib_info, code))
-
-        serializer = SimpleLibrarySerializer(items, many=True, context={"request": request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            code = pin.library.lib_code
+            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}
+            congestion_data = get_library_congestion_data(code)
+            serializer = SimpleLibrarySerializer(
+                (lib_info, code),
+                context={
+                    "request": request,
+                    **congestion_data,
+                }
+            )
+            result.append(serializer.data)
+        return Response(result, status=status.HTTP_200_OK)
 
 
 # 도서관 검색 결과 조회
