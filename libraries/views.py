@@ -26,10 +26,12 @@ def fetch_lib_info_or_none(lib_code: int):
     return libs_data[0]["lib"]
 
 # 혼잡도 정보를 가져오는 함수
-
 def get_library_congestion_data(lib_code: int):
     # 이미지 경로 및 좌석 정보 로드
-    img_name = "1.jpg"
+    if str(lib_code) == "111257":
+        img_name = "16.jpg"
+    else:
+        img_name = "1.jpg"  
     img_path = Path(settings.MEDIA_ROOT) / "images" / str(lib_code) / img_name
     seats = load_rois(lib_code, img_name)
     objects = detect_objects(str(img_path))
@@ -178,19 +180,24 @@ class ViewFavoriteLibraries(APIView):
                 .select_related('library')
                 .order_by('-id'))
 
-        items = []
+        result = []
         for pin in pins:
-            code = pin.library.lib_code  # int
-            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}  # 캐시 키가 str라면 str로
-            # SimpleLibrarySerializer는 lib.get("libName")를 참조하므로 키 맞춰줌
-            items.append((lib_info, code))
-
-        serializer = SimpleLibrarySerializer(items, many=True, context={"request": request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            code = pin.library.lib_code
+            lib_info = fetch_lib_info_or_none(code) or {"libName": str(code)}
+            congestion_data = get_library_congestion_data(code)
+            serializer = SimpleLibrarySerializer(
+                (lib_info, code),
+                context={
+                    "request": request,
+                    **congestion_data,
+                }
+            )
+            result.append(serializer.data)
+        return Response(result, status=status.HTTP_200_OK)
 
 
 # 도서관 검색 결과 조회
-class LibrarySearchView(APIView):
+class LibrarySearchView(APIView):                                                                                    
     def get(self, request):
         q = request.query_params.get("q", "").strip()
         if not q:
@@ -217,6 +224,16 @@ class LibrarySearchView(APIView):
             return Response({"message": "검색 결과가 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         results.sort(key=lambda x: x[0].get("libName", "").strip())
-        data = SimpleLibrarySerializer(results, many=True, context={"request": request}).data
+        data = []
+        for lib, code in results:
+            congestion_data = get_library_congestion_data(code)
+            serializer = SimpleLibrarySerializer(
+                (lib, code),
+                context={
+                    "request": request,
+                    **congestion_data
+                }
+            )
+            data.append(serializer.data)
         return Response({"results": data}, status=status.HTTP_200_OK)
 
