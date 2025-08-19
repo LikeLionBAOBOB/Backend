@@ -197,7 +197,7 @@ class ViewFavoriteLibraries(APIView):
 
 
 # 도서관 검색 결과 조회
-class LibrarySearchView(APIView):
+class LibrarySearchView(APIView):                                                                                    
     def get(self, request):
         q = request.query_params.get("q", "").strip()
         if not q:

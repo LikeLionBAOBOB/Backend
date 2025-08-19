@@ -26,7 +26,7 @@ class SimpleLibrarySerializer(serializers.Serializer):
         lib, lib_code = instance
         current_hours = LIBRARY_INFO.get(str(lib_code), {}).get("current_hours", "")
         
-          # Context에서 혼잡도 관련 데이터 가져오기
+        # Context에서 혼잡도 관련 데이터 가져오기
         current_seats = self.context.get("current_seats", 0)
         total_seats = self.context.get("total_seats", 0)
         congestion = self.context.get("congestion", "정보 없음")
@@ -64,7 +64,7 @@ class DetailLibrarySerializer(serializers.Serializer):
         site = LIBRARY_INFO.get(str(lib_code), {}).get("homepage", "")
         
         
-          # Context에서 혼잡도 관련 데이터 가져오기
+        # Context에서 혼잡도 관련 데이터 가져오기
         current_seats = self.context.get("current_seats", 0)
         total_seats = self.context.get("total_seats", 0)
         congestion = self.context.get("congestion", "정보 없음")
