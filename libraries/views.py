@@ -17,13 +17,25 @@ def fetch_lib_info_or_none(lib_code: int):
         "libCode": lib_code,
         "format": "json",
     }
-    res = requests.get(BASE_URL, params=params, timeout=5)
-    res.raise_for_status()
-    data = res.json()
-    libs_data = data.get("response", {}).get("libs", [])
-    if not libs_data:
+    try:
+        res = requests.get(BASE_URL, params=params, timeout=5)
+        res.raise_for_status()
+        data = res.json()
+        libs_data = data.get("response", {}).get("libs", [])
+        if libs_data:
+            return libs_data[0]["lib"]  # API 데이터
+    except Exception:
+        pass  # API 호출 횟수 초과시 json에서 불러오기
+    
+    local = LIBRARY_INFO.get(str(lib_code))
+    if not local:
         return None
-    return libs_data[0]["lib"]
+    
+    return {
+        "libName": local.get("name", ""),
+        "address": local.get("address", ""),
+    }
+
 
 # 혼잡도 정보를 가져오는 함수
 def get_library_congestion_data(lib_code: int):
@@ -67,7 +79,8 @@ def get_library_congestion_data(lib_code: int):
         "total_seats": total_seats,
         "congestion": congestion,
     }
-    
+
+
 # 도서관 정보 확인 (간략)
 class LibrarySimpleView(APIView):
     def get(self, request, lib_code: int):
@@ -105,7 +118,7 @@ class LibraryDetailView(APIView):
             if not lib_info:
                 return Response({"error": "도서관 정보를 불러올 수 없습니다."}, status=status.HTTP_404_NOT_FOUND)
 
-                        # 혼잡도 데이터 가져오기
+            # 혼잡도 데이터 가져오기
             congestion_data = get_library_congestion_data(lib_code)
 
             serializer = DetailLibrarySerializer(

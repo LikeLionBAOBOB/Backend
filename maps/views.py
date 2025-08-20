@@ -4,42 +4,53 @@ from rest_framework import status
 from django.utils.functional import cached_property
 from django.conf import settings
 from concurrent.futures import ThreadPoolExecutor, as_completed
-import time
-import requests
+import time, json, requests
 from json import JSONDecodeError
 import logging
 from libraries.views import get_library_congestion_data
-
-from .serializers import LibraryLocationAndCongestionResponse, LibraryItemSerializer
+from pathlib import Path
+from .utils.geocoding import geocode_query_cached  # 캐시 래퍼 사용
+from .serializers import *
 from libraries.models import Library
 
 BASE_URL = "http://data4library.kr/api/libSrch"
+LIBRARY_INFO_PATH = Path(settings.BASE_DIR) / "libraries" / "data" / "library_info.json"
+with open(LIBRARY_INFO_PATH, "r", encoding="utf-8") as f:
+    LIBRARY_INFO = json.load(f)
 
+# 도서관 정보 조회 함수
 def fetch_lib_info_or_none(lib_code: int):
-    """도서관 상세 정보를 가져오는 함수"""
+    params = {
+        "authKey": settings.LIBRARY_API_KEY,
+        "libCode": lib_code,
+        "format": "json",
+    }
     try:
-        params = {
-            "authKey": settings.LIBRARY_API_KEY,
-            "libCode": lib_code,
-            "format": "json",
-        }
         res = requests.get(BASE_URL, params=params, timeout=5)
         res.raise_for_status()
         data = res.json()
         libs_data = data.get("response", {}).get("libs", [])
-        if not libs_data:
-            return None
-        return libs_data[0]["lib"]
-    except Exception as e:
-        logger.error(f"도서관 정보 조회 실패: {lib_code} - {e}")
+        if libs_data:
+            return libs_data[0]["lib"]  # API 데이터
+    except Exception:
+        pass  # API 호출 횟수 초과시 json에서 불러오기
+    
+    local = LIBRARY_INFO.get(str(lib_code))
+    if not local:
         return None
-from .utils.geocoding import geocode_query_cached  # 캐시 래퍼 사용
+    
+    return {
+        "libCode": local.get("libCode", ""),
+        "libName": local.get("name", ""),
+        "address": local.get("address", ""),
+    }
+
 
 logger = logging.getLogger(__name__)
 
 NAVER_GEOCODE_URL = "https://maps.apigw.ntruss.com/map-geocode/v2/geocode"
 WORKERS = 6
-TOTAL_TIME_BUDGET = 7.0  # 전체 응답 타임 박스(초)
+TOTAL_TIME_BUDGET = 20.0  # 전체 응답 타임 박스(초)
 
 def fetch_lib_location_by_name(name: str, use_cache: bool = True):
     """이름으로 지오코딩해서 (lat, lng) 반환. 캐시 우선."""
@@ -229,4 +240,4 @@ class NearbyLibrariesView(APIView):
             return Response({"error": f"지오코딩 오류: {e}"}, status=status.HTTP_502_BAD_GATEWAY)
         except Exception as e:
             logger.error(f"예상치 못한 오류: {e}")
-            return Response({"error": "서버 오류"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": "서버 오류"})
