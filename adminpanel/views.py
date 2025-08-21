@@ -118,7 +118,7 @@ class AdminSeatLogView(APIView):
             seats = load_rois(lib_code, img_name)
             objects = detect_objects(str(img_path))
 
-            # 5번 좌석만
+            # 2번, 5번 좌석
             seat = next((s for s in seats if str(s["seat_id"]) == str(seat_id)), None)
             if not seat:
                 continue
