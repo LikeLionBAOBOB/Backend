@@ -1,6 +1,28 @@
-# Backend
-멋쟁이사자처럼 13기 중앙해커톤 BAOBOB_백엔드
+# 열람:뜰 📖
+> 공정하고 편리한 도서관 이용을 위한 한걸음
 
+<br>
+
+## 🛠️ 백엔드 기술 스택
+
+| 분류           | 기술/서비스                   |
+| -------------- | ---------------------------- |
+| **백엔드 프레임워크** | Django REST Framework       |
+| **AI/딥러닝**       | YOLOv8 (Ultralytics)        |
+| **데이터베이스**    | SQLite3 |
+| **배포/호스팅**     | PythonAnywhere              |
+| **지도/위치 API**   | Naver Maps API              |
+| **공공 데이터**     | 도서관 정보나루             |   
+
+<br>
+
+## 👥 백엔드 팀원 소개  
+- [@0euun](https://github.com/0euun)
+- [@jasmin0202](https://github.com/jasmin0202)
+
+<br>
+
+## 📁 백엔드 레포지터리 구조
 ```
 BACKEND/
 │
