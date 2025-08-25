@@ -19,13 +19,6 @@ BACKEND/
 │  ├─ urls.py
 │  └─ views.py
 │
-├─ configs/                 # 전체 프로젝트 환경설정 (settings)
-│  ├─ __init__.py
-│  ├─ asgi.py
-│  ├─ settings.py           # 핵심 환경설정
-│  ├─ urls.py               # 프로젝트 전체 라우팅
-│  └─ wsgi.py
-│
 ├─ libraries/               # 도서관 관련 데이터/로직
 │  ├─ data/
 │  │  └─ library_info.json  # 도서관 정보 메타데이터(JSON)
@@ -65,10 +58,17 @@ BACKEND/
 │  ├─ urls.py
 │  └─ views.py
 │
+├─ configs/                 # 전체 프로젝트 환경설정 (settings)
+│  ├─ __init__.py
+│  ├─ asgi.py
+│  ├─ settings.py           # 핵심 환경설정
+│  ├─ urls.py               # 프로젝트 전체 라우팅
+│  └─ wsgi.py
+│
 ├─ .env.example             # .env 예시파일(팀원 공유용)
 ├─ requirements.txt         # 파이썬 패키지/의존성 목록
 │
-├─ convert.py               # (단독 실행, 데이터 변환/마이그레이션 스크립트)
+├─ convert.py               # (단독 실행, onnx 변환 스크립트)
 ├─ manage.py                # Django 명령어 실행 진입점
 │
 ├─ yolov8n.onnx             # YOLOv8 모델(ONNX 포맷)
